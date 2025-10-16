@@ -2,6 +2,30 @@
 
 A Python library for investment portfolio optimization using maximum yield given variability, with time series predictions for asset returns.
 
+## 🚀 Quick Start with Real Market Data
+
+Want to optimize a portfolio with real stock data right away? We have three ready-to-use scripts:
+
+1. **`main.py`** - Basic portfolio optimization (⭐ Start here!)
+2. **`main_advanced.py`** - Compare multiple optimization strategies
+3. **`main_interactive.py`** - Interactive mode with custom inputs
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run basic optimization with real market data
+python main.py
+
+# Or run advanced comparison
+python main_advanced.py
+
+# Or use interactive mode
+python main_interactive.py
+```
+
+📖 See [SCRIPTS_GUIDE.md](SCRIPTS_GUIDE.md) for detailed usage instructions.
+
 ## Features
 
 - **Portfolio Optimization**: Multiple optimization strategies including:
