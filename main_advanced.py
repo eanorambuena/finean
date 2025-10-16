@@ -163,6 +163,16 @@ def main():
         'GLD',    # SPDR Gold Trust (Oro)
         'SPY',    # SPDR S&P 500 ETF (Acciones USA)
         'BIL',    # SPDR Bloomberg 1-3 Month T-Bill ETF (Bonos corto plazo)
+        'ITA',    # iShares U.S. Aerospace & Defense ETF
+        'XLP',    # Consumer Staples Select Sector SPDR Fund
+        'SPLB',   # SPDR Portfolio Long Term Treasury ETF
+        'QQQ',    # Invesco QQQ Trust (Tecnología)
+        'VTI',   # Total US Stock Market
+        'AGG',   # Bonos agregados
+        'JPM',       # Finanzas
+        'JNJ',       # Salud
+        'XOM',       # Energía
+        'BTC-USD',   # Crypto
     ]
     
     # Parámetros

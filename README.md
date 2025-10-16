@@ -1,151 +1,282 @@
-# Finean - Financial Analysis and Portfolio Optimization
+# 📊 Finean - Optimización de Portafolios de Inversión
 
-A Python library for investment portfolio optimization using maximum yield given variability, with time series predictions for asset returns.
+Biblioteca Python profesional para optimización de portafolios con **datos reales del mercado**.
 
-## 🚀 Quick Start with Real Market Data
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Want to optimize a portfolio with real stock data right away? We have three ready-to-use scripts:
+---
 
-1. **`main.py`** - Basic portfolio optimization (⭐ Start here!)
-2. **`main_advanced.py`** - Compare multiple optimization strategies
-3. **`main_interactive.py`** - Interactive mode with custom inputs
+## 📑 Índice
+
+- [🚀 Inicio Rápido](#-inicio-rápido)
+- [📂 Scripts Disponibles](#-scripts-disponibles)
+- [🎯 Ejemplos Prácticos](#-ejemplos-prácticos)
+- [⚙️ Configuración](#️-configuración)
+- [📊 Interpretación de Resultados](#-interpretación-de-resultados)
+- [🔧 API Python](#-api-python)
+- [💡 Tips y Buenas Prácticas](#-tips-y-buenas-prácticas)
+- [❓ FAQ](#-faq)
+- [📚 Recursos](#-recursos)
+
+---
+
+## 🚀 Inicio Rápido
+
+### 3 Pasos para Empezar
 
 ```bash
-# Install dependencies
+# 1. Instalar dependencias
 pip install -r requirements.txt
 
-# Run basic optimization with real market data
+# 2. Ejecutar optimización
 python main.py
 
-# Or run advanced comparison
-python main_advanced.py
-
-# Or use interactive mode
-python main_interactive.py
+# 3. ¡Ver resultados!
 ```
 
-📖 See [SCRIPTS_GUIDE.md](SCRIPTS_GUIDE.md) for detailed usage instructions.
+### Resultado Esperado
 
-## Features
+```
+RESULTADOS DE LA OPTIMIZACIÓN
+======================================================================
+Pesos Óptimos del Portafolio:
+  WMT     :  39.28% ███████████████████
+  JPM     :  31.90% ███████████████
+  JNJ     :  14.66% ███████
+  GOOGL   :  12.42% ██████
 
-- **Portfolio Optimization**: Multiple optimization strategies including:
-  - Maximum Sharpe Ratio (risk-adjusted return maximization)
-  - Minimum Volatility (risk minimization)
-  - Maximum Return for given risk level
-  - Efficient Frontier calculation
+Métricas del Portafolio Óptimo:
+  Retorno Esperado:    35.48% anual
+  Volatilidad:         15.05% anual
+  Ratio de Sharpe:      2.09  ⭐ Excelente
+```
 
-- **Time Series Prediction**: Forecast asset returns using:
-  - Exponentially Weighted Moving Average (EWMA)
-  - Simple Moving Average (SMA)
-  - Exponential Moving Average (EMA)
-  - Historical Mean
-  - Covariance matrix estimation with shrinkage methods
+---
 
-- **Financial Utilities**: Calculate key metrics:
-  - Returns (simple and log)
-  - Volatility (annualized and non-annualized)
-  - Sharpe Ratio
-  - Covariance and Correlation matrices
+## 📂 Scripts Disponibles
 
-## Installation
+| Script | Nivel | Descripción | Uso |
+|--------|-------|-------------|-----|
+| `main.py` | ⭐ Básico | Optimización Máximo Sharpe | `python main.py` |
+| `main_advanced.py` | ⭐⭐ Intermedio | Comparar estrategias | `python main_advanced.py` |
+| `main_interactive.py` | ⭐⭐⭐ Flexible | Modo interactivo | `python main_interactive.py` |
+| `demo.py` | 🎓 Demo | Múltiples ejemplos | `python demo.py` |
+
+### ¿Cuál Script Usar?
+
+- **Primera vez?** → `main.py`
+- **Quieres comparar estrategias?** → `main_advanced.py`
+- **Quieres cambiar parámetros sin editar código?** → `main_interactive.py`
+- **Quieres ver varios ejemplos?** → `demo.py`
+
+---
+
+## 🎯 Ejemplos Prácticos
+
+### Ejemplo 1: Tech Giants 🖥️
+
+```python
+# Edita main.py
+TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'NVDA', 'META']
+```
+
+**Resultado típico:**
+- Retorno: ~40% anual
+- Volatilidad: ~28% anual
+- Sharpe: ~1.3 (Bueno)
+
+### Ejemplo 2: Portafolio Clásico (Oro + Acciones + Bonos) 🏆
+
+```python
+TICKERS = [
+    'GLD',   # Oro (cobertura)
+    'SPY',   # S&P 500 (crecimiento)
+    'BIL',   # Bonos (estabilidad)
+]
+```
+
+**Resultado típico:**
+- Retorno: ~13% anual
+- Volatilidad: ~12% anual
+- Sharpe: ~0.8 (Conservador pero estable)
+
+### Ejemplo 3: ETFs Diversificados 📈
+
+```python
+TICKERS = ['SPY', 'QQQ', 'VTI', 'AGG', 'GLD']
+```
+
+### Ejemplo 4: Mix por Sectores 🏭
+
+```python
+TICKERS = [
+    'AAPL',  # Tech
+    'JPM',   # Finanzas
+    'JNJ',   # Salud
+    'XOM',   # Energía
+    'WMT',   # Consumo
+]
+```
+
+---
+
+## ⚙️ Configuración
+
+### Cambiar Activos
+
+Edita la lista `TICKERS` en cualquier script:
+
+```python
+TICKERS = ['AAPL', 'MSFT', 'GOOGL']  # Tus tickers aquí
+```
+
+**Tipos soportados:**
+- ✅ Acciones: `AAPL`, `MSFT`, `TSLA`
+- ✅ ETFs: `SPY`, `QQQ`, `VTI`
+- ✅ Criptos: `BTC-USD`, `ETH-USD`
+- ✅ Divisas: `EURUSD=X`
+- ✅ Índices: `^GSPC`, `^DJI`
+
+### Periodo de Datos
+
+```python
+PERIOD = '2y'   # 2 años (recomendado)
+PERIOD = '5y'   # 5 años (mejor)
+PERIOD = 'max'  # Máximo disponible
+```
+
+### Tasa Libre de Riesgo
+
+```python
+RISK_FREE_RATE = 0.04  # 4% anual (bonos del tesoro USA)
+```
+
+### Restricciones de Peso
+
+```python
+MIN_WEIGHT = 0.0   # Mínimo por activo (0 = puede ser 0%)
+MAX_WEIGHT = 0.40  # Máximo por activo (0.4 = máximo 40%)
+```
+
+---
+
+## 📊 Interpretación de Resultados
+
+### Ratio de Sharpe
+
+**¿Qué mide?** Retorno ajustado por riesgo.
+
+| Valor | Calificación | Significado |
+|-------|--------------|-------------|
+| < 1.0 | ❌ Malo | Bajo retorno por riesgo tomado |
+| 1.0-1.5 | ⚠️ Aceptable | Retorno decente por el riesgo |
+| 1.5-2.0 | ✅ Bueno | Buen balance riesgo-retorno |
+| > 2.0 | ⭐ Excelente | Muy buen retorno ajustado |
+
+**Fórmula:** `(Retorno - Tasa Libre de Riesgo) / Volatilidad`
+
+### Volatilidad (Riesgo)
+
+**¿Qué mide?** Cuánto varía el precio (a mayor volatilidad, mayor riesgo).
+
+| Rango | Tipo | Ejemplos |
+|-------|------|----------|
+| < 10% | Muy bajo | Bonos, activos estables |
+| 10-20% | Moderado | Portafolios diversificados |
+| 20-30% | Alto | Acciones volátiles |
+| > 30% | Muy alto | Crypto, especulativas |
+
+### Retorno Esperado
+
+Promedio anualizado de datos históricos.
+
+⚠️ **Importante:** Datos pasados no garantizan resultados futuros.
+
+### Matriz de Correlación
+
+**¿Qué mide?** Cómo se mueven los activos entre sí.
+
+- **+1.0:** Se mueven juntos (mala diversificación)
+- **0.0:** Independientes (buena diversificación)
+- **-1.0:** Opuestos (excelente diversificación)
+
+---
+
+## 🔧 API Python
+
+### Instalación
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Requirements
-
+**Dependencias:**
 - numpy >= 1.21.0
 - pandas >= 1.3.0
 - scipy >= 1.7.0
 - matplotlib >= 3.4.0
+- yfinance >= 0.2.0
 
-## Quick Start
-
-```python
-import numpy as np
-import pandas as pd
-from finean import PortfolioOptimizer, TimeSeriesPredictor
-from finean.utils import calculate_returns
-
-# 1. Load or generate historical price data
-prices = pd.read_csv('your_price_data.csv', index_col=0, parse_dates=True)
-
-# 2. Calculate returns
-returns = calculate_returns(prices, method='simple')
-
-# 3. Use time series predictor to forecast returns
-predictor = TimeSeriesPredictor(method='ewma')
-predictor.fit(returns, span=60)
-predictions = predictor.get_predictions(annualize=True, periods_per_year=252)
-
-# 4. Optimize portfolio
-optimizer = PortfolioOptimizer(
-    expected_returns=predictions['returns'],
-    covariance_matrix=predictions['covariance'],
-    risk_free_rate=0.02
-)
-
-# Find maximum Sharpe ratio portfolio
-result = optimizer.optimize_max_sharpe(
-    constraints={'long_only': True, 'max_weight': 0.5}
-)
-
-print(f"Optimal Weights:\n{result['weights']}")
-print(f"Expected Return: {result['expected_return']:.2%}")
-print(f"Volatility: {result['volatility']:.2%}")
-print(f"Sharpe Ratio: {result['sharpe_ratio']:.3f}")
-```
-
-## Usage Examples
-
-### Portfolio Optimization
+### Uso Básico
 
 ```python
 from finean import PortfolioOptimizer
+from finean.utils import calculate_returns
+import yfinance as yf
 
-# Create optimizer with expected returns and covariance matrix
+# 1. Descargar datos
+data = yf.download(['AAPL', 'MSFT', 'GOOGL'], period='2y')
+prices = data['Close']
+
+# 2. Calcular retornos y métricas
+returns = calculate_returns(prices)
+expected_returns = returns.mean() * 252
+cov_matrix = returns.cov() * 252
+
+# 3. Optimizar
 optimizer = PortfolioOptimizer(
-    expected_returns=expected_returns,  # pd.Series
-    covariance_matrix=cov_matrix,       # pd.DataFrame
-    risk_free_rate=0.02
+    expected_returns=expected_returns,
+    covariance_matrix=cov_matrix,
+    risk_free_rate=0.04
 )
 
-# 1. Maximum Sharpe Ratio Portfolio
-max_sharpe = optimizer.optimize_max_sharpe(
-    constraints={'long_only': True, 'max_weight': 0.4}
-)
+# 4. Obtener portafolio óptimo
+result = optimizer.optimize_max_sharpe()
 
-# 2. Minimum Volatility Portfolio
+print(f"Pesos: {result['weights']}")
+print(f"Sharpe: {result['sharpe_ratio']:.2f}")
+```
+
+### Estrategias de Optimización
+
+```python
+# 1. Máximo Sharpe Ratio (mejor retorno ajustado)
+max_sharpe = optimizer.optimize_max_sharpe()
+
+# 2. Mínima Volatilidad (menor riesgo)
 min_vol = optimizer.optimize_min_volatility()
 
-# 3. Maximum Return for Target Risk
-target_risk = optimizer.optimize_max_return_for_risk(target_volatility=0.15)
+# 3. Máximo retorno para un riesgo objetivo
+target = optimizer.optimize_max_return_for_risk(target_volatility=0.15)
 
-# 4. Calculate Efficient Frontier
+# 4. Frontera eficiente
 frontier = optimizer.calculate_efficient_frontier(n_points=100)
 ```
 
-### Time Series Prediction
+### Restricciones
 
 ```python
-from finean import TimeSeriesPredictor
+constraints = {
+    'min_weight': 0.05,  # Mínimo 5% por activo
+    'max_weight': 0.30,  # Máximo 30% por activo
+    'long_only': True    # No short selling
+}
 
-# Create predictor
-predictor = TimeSeriesPredictor(method='ewma')
-
-# Fit on historical returns
-predictor.fit(returns, span=60)
-
-# Get predictions
-expected_returns = predictor.predict_returns()
-cov_matrix = predictor.predict_covariance(method='shrinkage')
-
-# Or get both at once
-predictions = predictor.get_predictions(annualize=True)
+result = optimizer.optimize_max_sharpe(constraints=constraints)
 ```
 
-### Financial Calculations
+### Utilidades Financieras
 
 ```python
 from finean.utils import (
@@ -155,130 +286,225 @@ from finean.utils import (
     calculate_covariance_matrix
 )
 
-# Calculate returns
+# Calcular retornos
 returns = calculate_returns(prices, method='simple')
 
-# Calculate volatility
-vol = calculate_volatility(returns, annualize=True, periods_per_year=252)
+# Calcular volatilidad
+vol = calculate_volatility(returns, annualize=True)
 
-# Calculate Sharpe ratio
-sharpe = calculate_sharpe_ratio(returns, risk_free_rate=0.02, annualize=True)
+# Calcular Sharpe Ratio
+sharpe = calculate_sharpe_ratio(returns, risk_free_rate=0.04)
 
-# Calculate covariance matrix
+# Matriz de covarianza
 cov = calculate_covariance_matrix(returns, annualize=True)
 ```
 
-## Running the Example
+### Predicción de Series Temporales
 
-A comprehensive example is provided in `examples/portfolio_optimization_example.py`:
+```python
+from finean import TimeSeriesPredictor
 
-```bash
-python examples/portfolio_optimization_example.py
+# Crear predictor
+predictor = TimeSeriesPredictor(method='ewma')
+
+# Entrenar con datos históricos
+predictor.fit(returns, span=60)
+
+# Predecir retornos y covarianza
+predictions = predictor.get_predictions(annualize=True)
+expected_returns = predictions['returns']
+cov_matrix = predictions['covariance']
 ```
 
-This will:
-1. Generate sample historical price data
-2. Calculate returns and use time series prediction
-3. Optimize portfolios using different strategies
-4. Calculate the efficient frontier
-5. Create visualizations showing the results
+---
 
-## Testing
+## 💡 Tips y Buenas Prácticas
 
-Run the test suite to verify the installation:
+### ✅ Hacer
+
+1. **Diversificar:** Usa activos de diferentes sectores
+2. **Datos suficientes:** Mínimo 2 años de historia
+3. **Revisar correlaciones:** Busca activos poco correlacionados
+4. **Reoptimizar:** Cada 3-6 meses
+5. **Considerar costos:** Comisiones, impuestos, etc.
+
+### ❌ Evitar
+
+1. **Solo un sector:** No pongas todo en tech/finanzas/etc.
+2. **Datos insuficientes:** Menos de 1 año no es representativo
+3. **Perseguir retornos:** Alto retorno pasado ≠ futuro garantizado
+4. **Ignorar advertencias:** El optimizador te avisa de problemas
+5. **Invertir sin asesoría:** Esto es educativo, no asesoría financiera
+
+### 🎯 Portafolios Recomendados por Perfil
+
+#### Conservador 🛡️
+```python
+TICKERS = ['BIL', 'AGG', 'GLD', 'SPY']
+MAX_WEIGHT = 0.40
+```
+Objetivo: Preservar capital, bajo riesgo.
+
+#### Moderado ⚖️
+```python
+TICKERS = ['SPY', 'QQQ', 'AGG', 'GLD', 'VTI']
+MAX_WEIGHT = 0.35
+```
+Objetivo: Balance entre crecimiento y estabilidad.
+
+#### Agresivo 🚀
+```python
+TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA']
+MAX_WEIGHT = 0.40
+```
+Objetivo: Máximo crecimiento, aceptando alta volatilidad.
+
+---
+
+## ❓ FAQ
+
+### ¿Es esto asesoría financiera?
+
+**No.** Este proyecto es **solo educativo**. No inviertas sin consultar a un profesional.
+
+### ¿Los retornos son garantizados?
+
+**No.** Los resultados se basan en datos históricos. El pasado no predice el futuro.
+
+### ¿Qué significa "Optimización no convergió"?
+
+El algoritmo tuvo problemas. Soluciones:
+- Aumenta el periodo de datos (`PERIOD = '5y'`)
+- Ajusta restricciones (aumenta `MAX_WEIGHT`)
+- Reduce número de activos
+
+### ¿Por qué un activo tiene peso 0%?
+
+El optimizador decidió que no mejora el portafolio. Esto es normal y esperado.
+
+### ¿Puedo usar con datos propios?
+
+Sí. Usa la API Python con tus propios DataFrames de precios.
+
+### ¿Funciona con criptomonedas?
+
+Sí, usa tickers como `BTC-USD`, `ETH-USD`, etc.
+
+### ¿Incluye costos de transacción?
+
+No. Los cálculos son teóricos. En la práctica considera:
+- Comisiones de compra/venta
+- Impuestos sobre ganancias
+- Spreads bid-ask
+- Costos de rebalanceo
+
+### ¿Cada cuánto debo reoptimizar?
+
+Recomendado: cada 3-6 meses, o cuando cambien tus objetivos.
+
+---
+
+## 📚 Recursos
+
+### Documentación
+
+- **README.md** (este archivo) - Guía completa
+- **examples/** - Ejemplos de uso de la biblioteca
+- **tests/** - Suite de tests
+
+### Teoría
+
+- [Modern Portfolio Theory](https://en.wikipedia.org/wiki/Modern_portfolio_theory) - Teoría base
+- [Sharpe Ratio](https://www.investopedia.com/terms/s/sharperatio.asp) - Explicación del ratio de Sharpe
+- [Efficient Frontier](https://www.investopedia.com/terms/e/efficientfrontier.asp) - Frontera eficiente
+
+### Herramientas
+
+- [Yahoo Finance](https://finance.yahoo.com/) - Buscar tickers
+- [ETF Database](https://etfdb.com/) - Información de ETFs
+- [Portfolio Visualizer](https://www.portfoliovisualizer.com/) - Análisis complementario
+
+### Libros Recomendados
+
+- "A Random Walk Down Wall Street" - Burton Malkiel
+- "The Intelligent Investor" - Benjamin Graham
+- "Common Sense on Mutual Funds" - John Bogle
+
+---
+
+## 🔬 Tests
+
+Ejecutar suite de tests:
 
 ```bash
 python -m unittest discover tests -v
 ```
 
-All tests should pass, covering:
-- Utility functions
-- Time series prediction methods
-- Portfolio optimization algorithms
+Los tests cubren:
+- Utilidades financieras
+- Optimización de portafolios
+- Predicción de series temporales
 
-## API Reference
+---
 
-### PortfolioOptimizer
+## 📝 Licencia
 
-Main class for portfolio optimization.
+MIT License - Ver [LICENSE](LICENSE)
 
-**Methods:**
-- `optimize_max_sharpe(constraints=None)`: Find portfolio with maximum Sharpe ratio
-- `optimize_min_volatility(constraints=None)`: Find minimum volatility portfolio
-- `optimize_max_return_for_risk(target_volatility, constraints=None)`: Maximize return for given risk
-- `calculate_efficient_frontier(n_points=100, constraints=None)`: Calculate efficient frontier
-- `get_portfolio_statistics(weights)`: Calculate statistics for a given portfolio
+---
 
-**Constraints:**
-- `max_weight`: Maximum weight per asset (default: 1.0)
-- `min_weight`: Minimum weight per asset (default: 0.0)
-- `long_only`: Boolean, whether to allow short selling (default: True)
+## 🤝 Contribuir
 
-### TimeSeriesPredictor
+¿Encontraste un bug o tienes una sugerencia?
 
-Class for time series prediction of asset returns.
+1. Abre un **Issue** describiendo el problema
+2. O haz un **Pull Request** con tu solución
 
-**Methods:**
-- `fit(returns, **kwargs)`: Fit predictor on historical returns
-- `predict_returns(horizon=1)`: Predict expected returns
-- `predict_covariance(method='sample')`: Predict covariance matrix
-- `get_predictions(annualize=True, periods_per_year=252)`: Get both returns and covariance
+---
 
-**Prediction Methods:**
-- `ewma`: Exponentially Weighted Moving Average
-- `sma`: Simple Moving Average
-- `ema`: Exponential Moving Average
-- `historical_mean`: Historical mean returns
+## ⚠️ Disclaimers
 
-**Covariance Methods:**
-- `sample`: Sample covariance
-- `ewma`: Exponentially weighted covariance
-- `shrinkage`: Ledoit-Wolf shrinkage estimator
+### Riesgo de Inversión
 
-## Mathematical Background
+Las inversiones en el mercado de valores conllevan riesgos. Puedes perder parte o todo tu capital. Esta herramienta:
 
-### Portfolio Optimization
+- ❌ **NO** es asesoría financiera
+- ❌ **NO** garantiza resultados
+- ❌ **NO** reemplaza a un asesor profesional
+- ✅ **ES** solo educativa
+- ✅ **ES** para aprender sobre optimización
+- ✅ **ES** un punto de partida para análisis
 
-The library implements Modern Portfolio Theory (MPT) optimization:
+### Limitaciones del Modelo
 
-**Maximum Sharpe Ratio:**
-Maximizes: (E[R] - Rf) / σ
+- Asume distribución normal de retornos (no siempre cierto)
+- No considera eventos extremos ("cisnes negros")
+- Asume correlaciones constantes (cambian con el tiempo)
+- No incluye costos de transacción
+- Basado en datos históricos (pasado ≠ futuro)
 
-Where:
-- E[R] = Expected portfolio return
-- Rf = Risk-free rate
-- σ = Portfolio standard deviation (volatility)
+### Uso Responsable
 
-**Subject to:**
-- Sum of weights = 1
-- Optional constraints on individual weights
+Antes de invertir:
 
-**Minimum Volatility:**
-Minimizes: σ = sqrt(w' Σ w)
+1. ✅ Consulta con un asesor financiero certificado
+2. ✅ Entiende tu tolerancia al riesgo
+3. ✅ Considera tu horizonte temporal
+4. ✅ Diversifica adecuadamente
+5. ✅ Ten un plan de inversión claro
 
-Where:
-- w = Portfolio weights
-- Σ = Covariance matrix
+---
 
-**Efficient Frontier:**
-The set of optimal portfolios offering the highest expected return for each level of risk.
+## 📧 Contacto
 
-### Time Series Prediction
+**Proyecto:** [github.com/eanorambuena/finean](https://github.com/eanorambuena/finean)
 
-The library uses various methods to predict future returns:
+---
 
-- **EWMA**: Gives more weight to recent observations
-- **Moving Averages**: Simple or exponential averaging
-- **Covariance Estimation**: Sample, EWMA, or shrinkage methods for better risk estimates
+<div align="center">
 
-## Contributing
+**¡Gracias por usar Finean! 📈💰**
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Si te resultó útil, considera darle una ⭐ en GitHub
 
-## License
-
-This project is open source and available under the MIT License.
-
-## Author
-
-Fenian level finance
+</div>
