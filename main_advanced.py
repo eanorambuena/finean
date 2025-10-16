@@ -5,7 +5,8 @@ Este script permite:
 1. Descargar datos históricos de acciones reales
 2. Optimizar para Máximo Sharpe Ratio
 3. Optimizar para Mínima Volatilidad
-4. Comparar ambas estrategias
+4. Optimizar para Máximo Retorno
+5. Comparar las tres estrategias
 """
 
 import sys
@@ -109,41 +110,79 @@ def print_portfolio_results(title: str, result: dict):
     print()
 
 
-def compare_strategies(max_sharpe_result: dict, min_vol_result: dict):
-    """Compara las dos estrategias de optimización."""
+
+
+
+def compare_strategies(max_sharpe_result: dict, min_vol_result: dict, max_return_result: dict):
+    """Compara las tres estrategias de optimización."""
     print(f"{'='*70}")
-    print("COMPARACIÓN DE ESTRATEGIAS")
+    print("COMPARACIÓN DE ESTRATEGIAS (ordenado por retorno)")
     print(f"{'='*70}\n")
     
-    print(f"{'Métrica':<25} {'Max Sharpe':>15} {'Min Volatilidad':>15} {'Diferencia':>12}")
-    print("-" * 70)
-    
+    # Extraer métricas
     ret_sharpe = max_sharpe_result['expected_return'] * 100
     ret_minvol = min_vol_result['expected_return'] * 100
-    print(f"{'Retorno Esperado (%)':<25} {ret_sharpe:>15.2f} {ret_minvol:>15.2f} {ret_sharpe-ret_minvol:>12.2f}")
+    ret_maxret = max_return_result['expected_return'] * 100
     
     vol_sharpe = max_sharpe_result['volatility'] * 100
     vol_minvol = min_vol_result['volatility'] * 100
-    print(f"{'Volatilidad (%)':<25} {vol_sharpe:>15.2f} {vol_minvol:>15.2f} {vol_sharpe-vol_minvol:>12.2f}")
+    vol_maxret = max_return_result['volatility'] * 100
     
     sharpe_sharpe = max_sharpe_result['sharpe_ratio']
     sharpe_minvol = min_vol_result['sharpe_ratio']
-    print(f"{'Ratio de Sharpe':<25} {sharpe_sharpe:>15.2f} {sharpe_minvol:>15.2f} {sharpe_sharpe-sharpe_minvol:>12.2f}")
+    sharpe_maxret = max_return_result['sharpe_ratio']
+    
+    # Crear lista de estrategias con sus métricas
+    strategies = [
+        ('Min Vol', ret_minvol, vol_minvol, sharpe_minvol, '🛡️'),
+        ('Max Sharpe', ret_sharpe, vol_sharpe, sharpe_sharpe, '⭐'),
+        ('Max Return', ret_maxret, vol_maxret, sharpe_maxret, '🚀')
+    ]
+    
+    # Ordenar por retorno (menor a mayor)
+    strategies.sort(key=lambda x: x[1])
+    
+    # Imprimir encabezados
+    print(f"{'Estrategia':<18} {'Retorno':>12} {'Volatilidad':>12} {'Sharpe':>10} {'Perfil':>12}")
+    print("-" * 70)
+    
+    # Imprimir cada estrategia
+    for name, ret, vol, sharpe, emoji in strategies:
+        print(f"{name + ' ' + emoji:<18} {ret:>11.2f}% {vol:>11.2f}% {sharpe:>10.2f}   ", end='')
+        
+        # Indicador visual de riesgo
+        if vol < 5:
+            print("Muy Bajo")
+        elif vol < 10:
+            print("Bajo")
+        elif vol < 20:
+            print("Moderado")
+        elif vol < 30:
+            print("Alto")
+        else:
+            print("Muy Alto")
     
     print(f"\n{'='*70}\n")
     
     # Recomendación
-    print("RECOMENDACIÓN:")
+    print("RECOMENDACIONES:")
     print("-" * 70)
-    if sharpe_sharpe > sharpe_minvol * 1.1:
-        print("✓ El portafolio de MÁXIMO SHARPE ofrece mejor retorno ajustado por riesgo.")
-        print("  Recomendado para inversores que buscan maximizar eficiencia.")
-    elif vol_minvol < vol_sharpe * 0.8:
-        print("✓ El portafolio de MÍNIMA VOLATILIDAD ofrece mucho menor riesgo.")
-        print("  Recomendado para inversores conservadores que priorizan estabilidad.")
-    else:
-        print("≈ Ambas estrategias ofrecen perfiles similares de riesgo-retorno.")
-        print("  La elección depende de tu tolerancia al riesgo personal.")
+    
+    # Encontrar el mejor Sharpe
+    best_sharpe = max(sharpe_sharpe, sharpe_minvol, sharpe_maxret)
+    
+    if sharpe_sharpe >= best_sharpe * 0.95:
+        print("✓ MÁXIMO SHARPE: Mejor balance entre retorno y riesgo")
+        print("  Recomendado para inversores que buscan eficiencia")
+    
+    if sharpe_minvol >= best_sharpe * 0.95 or vol_minvol < min(vol_sharpe, vol_maxret) * 0.85:
+        print("✓ MÍNIMA VOLATILIDAD: Menor riesgo")
+        print("  Recomendado para inversores conservadores")
+    
+    if ret_maxret > max(ret_sharpe, ret_minvol) * 1.1:
+        print("⚠️  MÁXIMO RETORNO: Mayor retorno pero con MÁS RIESGO")
+        print(f"  Volatilidad: {vol_maxret:.2f}% (vs {vol_sharpe:.2f}% Max Sharpe)")
+        print("  Solo para inversores agresivos con alta tolerancia al riesgo")
     
     print(f"\n{'='*70}\n")
 
@@ -225,14 +264,24 @@ def main():
         min_vol_result = optimizer.optimize_min_volatility(constraints=constraints)
         print_portfolio_results("PORTAFOLIO ÓPTIMO: MÍNIMA VOLATILIDAD", min_vol_result)
         
-        # Paso 6: Comparar estrategias
-        compare_strategies(max_sharpe_result, min_vol_result)
+        # Paso 6: Optimización para Máximo Retorno
+        print(f"{'='*70}")
+        print("ESTRATEGIA 3: Maximizar Retorno (sin considerar riesgo)")
+        print(f"{'='*70}\n")
+        print("Optimizando para máximo retorno esperado...\n")
+        
+        max_return_result = optimizer.optimize_max_return(constraints=constraints)
+        print_portfolio_results("PORTAFOLIO ÓPTIMO: MÁXIMO RETORNO", max_return_result)
+        
+        # Paso 7: Comparar estrategias
+        compare_strategies(max_sharpe_result, min_vol_result, max_return_result)
         
         # Información adicional
         print("NOTAS:")
         print("-" * 70)
-        print("• El portafolio de Máximo Sharpe busca la mejor eficiencia (retorno/riesgo)")
-        print("• El portafolio de Mínima Volatilidad busca reducir el riesgo al mínimo")
+        print("• Máximo Sharpe: Mejor eficiencia (retorno/riesgo)")
+        print("• Mínima Volatilidad: Menor riesgo posible")
+        print("• Máximo Retorno: Mayor retorno esperado (ignora el riesgo)")
         print("• Los retornos son anualizados basados en datos históricos")
         print("• La optimización está sujeta a las restricciones de peso configuradas")
         print(f"  (mín: {MIN_WEIGHT*100:.0f}%, máx: {MAX_WEIGHT*100:.0f}% por activo)")

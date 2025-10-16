@@ -251,16 +251,19 @@ print(f"Sharpe: {result['sharpe_ratio']:.2f}")
 ### Estrategias de Optimización
 
 ```python
-# 1. Máximo Sharpe Ratio (mejor retorno ajustado)
+# 1. Máximo Sharpe Ratio (mejor retorno ajustado por riesgo)
 max_sharpe = optimizer.optimize_max_sharpe()
 
 # 2. Mínima Volatilidad (menor riesgo)
 min_vol = optimizer.optimize_min_volatility()
 
-# 3. Máximo retorno para un riesgo objetivo
+# 3. Máximo Retorno (sin considerar riesgo - agresivo)
+max_return = optimizer.optimize_max_return()
+
+# 4. Máximo retorno para un riesgo objetivo
 target = optimizer.optimize_max_return_for_risk(target_volatility=0.15)
 
-# 4. Frontera eficiente
+# 5. Frontera eficiente
 frontier = optimizer.calculate_efficient_frontier(n_points=100)
 ```
 

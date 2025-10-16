@@ -192,6 +192,75 @@ class PortfolioOptimizer:
             'optimization_success': result.success
         }
     
+    def optimize_max_return(self, constraints: Optional[Dict] = None) -> Dict:
+        """
+        Optimize portfolio for maximum return (without risk adjustment).
+        
+        This finds the portfolio with the highest expected return,
+        without considering risk or the Sharpe ratio. This typically
+        results in concentrated positions in the highest-return assets.
+        
+        Parameters:
+        -----------
+        constraints : dict, optional
+            Additional constraints (same as optimize_max_sharpe)
+            
+        Returns:
+        --------
+        dict
+            Optimization results
+        """
+        # Set default constraints
+        if constraints is None:
+            constraints = {}
+        
+        max_weight = constraints.get('max_weight', 1.0)
+        min_weight = constraints.get('min_weight', 0.0)
+        long_only = constraints.get('long_only', True)
+        
+        # Initial guess: equal weights
+        x0 = np.array([1.0 / self.n_assets] * self.n_assets)
+        
+        # Bounds for weights
+        if long_only:
+            bounds = tuple((min_weight, max_weight) for _ in range(self.n_assets))
+        else:
+            bounds = tuple((-max_weight, max_weight) for _ in range(self.n_assets))
+        
+        # Constraints: weights sum to 1
+        constraint = {'type': 'eq', 'fun': lambda x: np.sum(x) - 1.0}
+        
+        # Objective: negative return (to minimize)
+        def neg_return(weights):
+            return -self._calculate_portfolio_return(weights)
+        
+        # Optimize
+        result = minimize(
+            neg_return,
+            x0,
+            method='SLSQP',
+            bounds=bounds,
+            constraints=constraint,
+            options={'maxiter': 1000, 'ftol': 1e-9}
+        )
+        
+        if not result.success:
+            warnings.warn(f"Optimization did not converge: {result.message}")
+        
+        # Extract results
+        optimal_weights = pd.Series(result.x, index=self.assets)
+        portfolio_return = self._calculate_portfolio_return(result.x)
+        portfolio_vol = self._calculate_portfolio_volatility(result.x)
+        sharpe = self._calculate_sharpe_ratio(result.x)
+        
+        return {
+            'weights': optimal_weights,
+            'expected_return': portfolio_return,
+            'volatility': portfolio_vol,
+            'sharpe_ratio': sharpe,
+            'optimization_success': result.success
+        }
+    
     def optimize_max_return_for_risk(self, target_volatility: float,
                                      constraints: Optional[Dict] = None) -> Dict:
         """
