@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 import numpy as np
 import pandas as pd
 import yfinance as yf
+import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from finean import PortfolioOptimizer
 from finean.utils import calculate_returns, calculate_volatility
@@ -187,6 +188,122 @@ def compare_strategies(max_sharpe_result: dict, min_vol_result: dict, max_return
     print(f"\n{'='*70}\n")
 
 
+def plot_portfolio_scenarios(max_sharpe_result: dict, min_vol_result: dict, max_return_result: dict, 
+                             investment_amount: float = 10000, time_horizon: int = 1):
+    """
+    Visualiza escenarios (pesimista, esperado, optimista) para cada portafolio.
+    
+    Parameters:
+    -----------
+    investment_amount : float
+        Monto inicial de inversión
+    time_horizon : int
+        Horizonte temporal en años
+    """
+    print(f"{'='*70}")
+    print("PROYECCIÓN DE ESCENARIOS")
+    print(f"{'='*70}\n")
+    print(f"Inversión inicial: ${investment_amount:,.0f}")
+    print(f"Horizonte temporal: {time_horizon} año(s)\n")
+    
+    strategies = {
+        'Min Vol 🛡️': min_vol_result,
+        'Max Sharpe ⭐': max_sharpe_result,
+        'Max Return 🚀': max_return_result
+    }
+    
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    fig.suptitle('Proyección de Portafolios: Escenarios a 1 Año', fontsize=16, fontweight='bold')
+    
+    for idx, (name, result) in enumerate(strategies.items()):
+        ax = axes[idx]
+        
+        # Extraer métricas
+        expected_return = result['expected_return']
+        volatility = result['volatility']
+        
+        # Calcular escenarios
+        # Pesimista: retorno esperado - 2 desviaciones estándar
+        # Esperado: retorno esperado
+        # Optimista: retorno esperado + 2 desviaciones estándar
+        pessimistic = investment_amount * (1 + (expected_return - 2 * volatility) * time_horizon)
+        expected = investment_amount * (1 + expected_return * time_horizon)
+        optimistic = investment_amount * (1 + (expected_return + 2 * volatility) * time_horizon)
+        
+        # Asegurar que el pesimista no sea negativo
+        pessimistic = max(pessimistic, investment_amount * 0.1)
+        
+        # Datos para el gráfico
+        scenarios = ['Pesimista\n(-2σ)', 'Esperado', 'Optimista\n(+2σ)']
+        values = [pessimistic, expected, optimistic]
+        colors = ['#d62728', '#2ca02c', '#1f77b4']
+        
+        # Crear barras
+        bars = ax.bar(scenarios, values, color=colors, alpha=0.7, edgecolor='black', linewidth=1.5)
+        
+        # Línea de referencia (inversión inicial)
+        ax.axhline(y=investment_amount, color='gray', linestyle='--', linewidth=2, label='Inversión inicial')
+        
+        # Etiquetas en las barras
+        for bar, value in zip(bars, values):
+            height = bar.get_height()
+            profit = value - investment_amount
+            profit_pct = (profit / investment_amount) * 100
+            
+            ax.text(bar.get_x() + bar.get_width()/2., height,
+                   f'${value:,.0f}\n({profit_pct:+.1f}%)',
+                   ha='center', va='bottom', fontsize=9, fontweight='bold')
+        
+        # Configuración del gráfico
+        ax.set_title(f'{name}\nRetorno: {expected_return*100:.1f}% | Vol: {volatility*100:.1f}%',
+                    fontsize=11, fontweight='bold')
+        ax.set_ylabel('Valor del Portafolio ($)', fontsize=10)
+        ax.set_ylim(0, max(values) * 1.2)
+        ax.grid(axis='y', alpha=0.3, linestyle='--')
+        ax.legend(fontsize=8)
+        
+        # Formato de eje Y
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'${x:,.0f}'))
+    
+    plt.tight_layout()
+    
+    # Guardar y mostrar
+    filename = 'portfolio_scenarios.png'
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    print(f"✓ Gráfico guardado como: {filename}\n")
+    
+    # Mostrar el gráfico
+    plt.show()
+    
+    # Tabla resumen de escenarios
+    print("TABLA DE ESCENARIOS:")
+    print("-" * 70)
+    print(f"{'Portafolio':<20} {'Pesimista':>15} {'Esperado':>15} {'Optimista':>15}")
+    print("-" * 70)
+    
+    for name, result in strategies.items():
+        expected_return = result['expected_return']
+        volatility = result['volatility']
+        
+        pessimistic = investment_amount * (1 + (expected_return - 2 * volatility) * time_horizon)
+        expected = investment_amount * (1 + expected_return * time_horizon)
+        optimistic = investment_amount * (1 + (expected_return + 2 * volatility) * time_horizon)
+        
+        pessimistic = max(pessimistic, investment_amount * 0.1)
+        
+        print(f"{name:<20} ${pessimistic:>14,.0f} ${expected:>14,.0f} ${optimistic:>14,.0f}")
+    
+    print()
+    print("INTERPRETACIÓN:")
+    print("-" * 70)
+    print("• Pesimista: Escenario donde el retorno es 2 desviaciones estándar BAJO el esperado")
+    print("             (probabilidad ~2.5% de ser peor que esto)")
+    print("• Esperado: Retorno promedio esperado basado en datos históricos")
+    print("• Optimista: Escenario donde el retorno es 2 desviaciones estándar SOBRE el esperado")
+    print("             (probabilidad ~2.5% de ser mejor que esto)")
+    print(f"\n{'='*70}\n")
+
+
 def main():
     """Función principal para ejecutar la optimización avanzada."""
     print("\n" + "="*70)
@@ -275,6 +392,10 @@ def main():
         
         # Paso 7: Comparar estrategias
         compare_strategies(max_sharpe_result, min_vol_result, max_return_result)
+        
+        # Paso 8: Visualizar escenarios
+        plot_portfolio_scenarios(max_sharpe_result, min_vol_result, max_return_result,
+                                investment_amount=10000, time_horizon=1)
         
         # Información adicional
         print("NOTAS:")
